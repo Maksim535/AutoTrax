@@ -13,7 +13,7 @@
          Digitalna povijest servisa vozila
         </p>
       </div>
-TEEEEEEET
+TEEEEEEESSSST
       
 </template>
 
