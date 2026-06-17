@@ -3,6 +3,13 @@ import { ref } from 'vue'
 
 const email = ref('')
 const password = ref('')
+const errorMessage = ref('')
+
+
+
+
+
+
 </script>
 
 
@@ -24,6 +31,14 @@ const password = ref('')
          Digitalna povijest servisa vozila
         </p>
       </div>
+
+    <div
+      v-if="errorMessage" class="bg-red-500/30 border border-red-500
+       text-red-400 px-4 py-3 rounded-2xl mb-5">
+      
+      {{ errorMessage }}
+      </div>
+    
 
     <form class="space-y-5">
       
