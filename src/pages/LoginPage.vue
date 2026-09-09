@@ -1,32 +1,35 @@
 <script setup>
 import { ref } from 'vue'
-
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
+import { useAuthStore } from '../stores/auth'
 
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const loginUser = () => {
-  const savedUser = localStorage.getItem(email.value)
+const authStore = useAuthStore()
 
-  if(!savedUser){
-    errorMessage.value = 'Korisnik ne postoji. '
-    return
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+
+
+
+
+
+const loginUser = async () => {
+  errorMessage.value = ''
+
+  try {
+    await authStore.login(
+      email.value,
+      password.value
+    )
+
+    router.push('/dashboard')
+
+  } catch (error) {
+    errorMessage.value = 'Pogrešan email ili lozinka.'
   }
-  const user = JSON.parse(savedUser)
-
-  if(user.password !== password.value) {
-    errorMessage.value = 'Pogrešna lozinka. '
-    return
-  }
-
-localStorage.setItem('loggedInUser', email.value)
-
-router.push('/dashboard')
-
 }
 
 </script>

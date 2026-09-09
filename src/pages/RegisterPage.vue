@@ -1,27 +1,34 @@
 <script setup>
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const name = ref('')
 const email = ref('')
 const password = ref('')
+const errorMessage = ref('')
 
-const registerUser = () => {
-  const user = {
-    name: name.value,
-    email: email.value, 
-    password: password.value
+const registerUser = async () => {
+  errorMessage.value = ''
+
+  try {
+    await authStore.register(
+      email.value,
+      password.value
+    )
+
+    router.push('/')
+
+  } catch (error) {
+    errorMessage.value = 'Registracija nije uspjela.'
   }
-
-  localStorage.setItem(email.value, JSON.stringify(user))
-
-  router.push('/')
-
 }
-
 </script>
+
 
 
 <template>
@@ -120,7 +127,14 @@ const registerUser = () => {
           Registracija
         </button>
 
-      </form>
+        </form>
+
+      <p
+        v-if="errorMessage"
+        class="text-red-500 text-sm text-center mt-4"
+      >
+        {{ errorMessage }}
+      </p>
 
       <div class="text-center mt-7">
 
@@ -129,6 +143,8 @@ const registerUser = () => {
         </p>
 
       </div>
+
+    
 
     </div>
 
