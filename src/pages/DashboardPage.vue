@@ -1,10 +1,15 @@
 <script setup>
+
+import {ref } from 'vue'
+
+const showUserMenu = ref(false);
+
 </script>
 
 <template>
   <div class="min-h-screen bg-[#0f0f0f] text-white p-6">
 
-    <!-- HEADER -->
+    
     <div class="flex items-center justify-between mb-8">
 
       <!-- LOGO -->
@@ -43,11 +48,36 @@
         </button>
 
         <!-- KORISNIK -->
-        <button
-          class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-black font-bold text-sm"
-        >
-          ML
-        </button>
+<div class="relative">
+
+  <button
+    @click="showUserMenu = !showUserMenu"
+    class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-black font-bold text-sm"
+  >
+    ML
+  </button>
+
+  <!-- DROPDOWN -->
+  <div
+    v-if="showUserMenu"
+    class="absolute right-0 mt-3 w-44 bg-[#171717] border border-[#2a2a2a] rounded-2xl shadow-2xl p-2 z-50"
+  >
+
+    <button
+      class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-[#222222] hover:text-white transition"
+    >
+      Moj račun
+    </button>
+
+    <button
+      class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition"
+    >
+      Odjava
+    </button>
+
+  </div>
+
+</div>
 
       </div>
 
@@ -66,7 +96,7 @@
 
     </div>
 
-    <!-- STATS -->
+    <!-- Podaci -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
       <div class="bg-[#171717] p-6 rounded-3xl border border-[#2a2a2a]">
@@ -101,7 +131,7 @@
 
     </div>
 
-    <!-- VOZILA -->
+    <!-- Popis vozila jos nisam rijesio-->
     <div>
 
       <div class="flex items-center justify-between mb-5">

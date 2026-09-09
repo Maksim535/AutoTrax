@@ -5,6 +5,30 @@ const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const loginUser = () => {
+  const savedUser = localStorage.getItem(email.value)
+
+  if(!savedUser){
+    errorMessage.value = 'Korisnik ne postoji. '
+    return
+  }
+  const user = JSON.parse(savedUser)
+
+  if(user.password !== password.value) {
+    errorMessage.value = 'Pogrešna lozinka. '
+    return
+  }
+
+localStorage.setItem('loggedInUser', email.value)
+
+router.push('/dashboard')
+
+}
+
 </script>
 
 <template>
@@ -35,10 +59,10 @@ const errorMessage = ref('')
         {{ errorMessage }}
       </div>
 
-      <!-- FORMA -->
-      <form class="space-y-5">
+      <!-- ispuna forme -->
+      <form @submit.prevent="loginUser" class="space-y-5">
 
-        <!-- EMAIL -->
+        <!-- email -->
         <div>
 
           <label class="text-gray-300 text-sm block mb-2">
@@ -60,7 +84,7 @@ const errorMessage = ref('')
 
         </div>
 
-        <!-- LOZINKA -->
+        <!-- lozinka -->
         <div>
 
           <label class="text-gray-300 text-sm block mb-2">
@@ -82,7 +106,7 @@ const errorMessage = ref('')
 
         </div>
 
-        <!-- GUMB -->
+        <!-- gumb za prijavu -->
         <button
           type="submit"
           class="w-full
@@ -100,15 +124,15 @@ const errorMessage = ref('')
 
       </form>
 
-      <!-- REGISTRACIJA -->
+      <!-- REGISTRACIJA korisnika -->
       <div class="text-center mt-7">
 
         <p class="text-gray-400">
           Nemate račun?
 
-          <span class="text-orange-500 font-semibold cursor-pointer">
+          <button type="button" @click="router.push('/register')" class="text-orange-500 font-semibold cursor-pointer">
             Registrirajte se
-          </span>
+          </button>
         </p>
 
       </div>

@@ -8,6 +8,19 @@ const name = ref('')
 const email = ref('')
 const password = ref('')
 
+const registerUser = () => {
+  const user = {
+    name: name.value,
+    email: email.value, 
+    password: password.value
+  }
+
+  localStorage.setItem(email.value, JSON.stringify(user))
+
+  router.push('/')
+
+}
+
 </script>
 
 
@@ -35,7 +48,7 @@ const password = ref('')
 
       </div>
 
-      <form class="space-y-5">
+      <form @submit.prevent="registerUser" class="space-y-5">
 
         <div>
           <label class="text-gray-300 text-sm block mb-2">
