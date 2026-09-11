@@ -44,7 +44,7 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-    async getVehicles() {
+    async getVehicles() {  
       this.loading = true
       this.error = null
 

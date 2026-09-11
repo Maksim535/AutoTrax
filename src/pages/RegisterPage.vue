@@ -24,6 +24,11 @@ const registerUser = async () => {
     router.push('/')
 
   } catch (error) {
+  console.log(error)
+
+  if (error.code === 'auth/email-already-in-use') {
+    errorMessage.value = 'Ovaj email je već registriran.'
+  } else {
     errorMessage.value = 'Registracija nije uspjela.'
   }
 }

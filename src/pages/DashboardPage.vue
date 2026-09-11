@@ -1,8 +1,36 @@
 <script setup>
 
-import {ref } from 'vue'
+import { ref } from 'vue'
+import { useDataStore } from '../stores/dataStore'
 
-const showUserMenu = ref(false);
+const dataStore = useDataStore()
+
+const showUserMenu = ref(false)
+const showAddVehicle = ref(false)
+
+const brand = ref('')
+const model = ref('')
+const year = ref('')
+const registration = ref('')
+const kilometers = ref('')
+
+const addVehicle = async () => {
+  await dataStore.addVehicle({
+    brand: brand.value,
+    model: model.value,
+    year: Number(year.value),
+    registration: registration.value,
+    kilometers: Number(kilometers.value)
+  })
+
+  brand.value = ''
+  model.value = ''
+  year.value = ''
+  registration.value = ''
+  kilometers.value = ''
+
+  showAddVehicle.value = false
+}
 
 </script>
 
@@ -140,7 +168,7 @@ const showUserMenu = ref(false);
           Moja vozila
         </h2>
 
-        <button
+        <button @click="showAddVehicle = true"
           class="bg-orange-500 hover:bg-orange-600 transition px-5 py-3 rounded-2xl font-semibold"
         >
           + Dodaj vozilo
