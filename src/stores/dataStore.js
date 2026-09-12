@@ -141,6 +141,16 @@ export const useDataStore = defineStore('data', {
       } finally {
         this.loading = false
       }
+    },
+
+    async deleteService(id) {
+      await deleteDoc(
+        doc(db, 'services', id)
+      )
+
+      this.services = this.services.filter(
+        (service) => service.id !== id
+      )
     }
 
   }
