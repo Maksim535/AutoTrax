@@ -44,7 +44,7 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-    async getVehicles() {  
+    async getVehicles() {
       this.loading = true
       this.error = null
 
@@ -92,6 +92,55 @@ export const useDataStore = defineStore('data', {
       this.vehicles = this.vehicles.filter(
         (vehicle) => vehicle.id !== id
       )
+    },
+
+    async addService(service) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const docRef = await addDoc(
+          collection(db, 'services'),
+          service
+        )
+
+        this.services.push({
+          id: docRef.id,
+          ...service
+        })
+
+      } catch (error) {
+        this.error = error.message
+        throw error
+
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async getServices(vehicleId) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const snapshot = await getDocs(
+          collection(db, 'services')
+        )
+
+        this.services = snapshot.docs
+          .map((document) => ({
+            id: document.id,
+            ...document.data()
+          }))
+          .filter((service) => service.vehicleId === vehicleId)
+
+      } catch (error) {
+        this.error = error.message
+        throw error
+
+      } finally {
+        this.loading = false
+      }
     }
 
   }
