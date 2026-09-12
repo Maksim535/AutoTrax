@@ -4,33 +4,46 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 
+
+// PINIA STORE I ROUTER
 const route = useRoute()
 const dataStore = useDataStore()
 
+
+// DODAVANJE SERVISA
 const showAddService = ref(false)
 
 const serviceName = ref('')
 const serviceDescription = ref('')
 const servicePrice = ref('')
+const serviceLaborPrice = ref('')
 const serviceKilometers = ref('')
 const serviceDate = ref('')
 
+
+// PRONALAŽENJE TRENUTNOG VOZILA
 const vehicle = computed(() => {
   return dataStore.vehicles.find(
     (vehicle) => vehicle.id === route.params.id
   )
 })
 
+
+// UČITAVANJE SERVISA ZA TRENUTNO VOZILO
 onMounted(() => {
   dataStore.getServices(route.params.id)
 })
 
+
+// SPREMANJE NOVOG SERVISA
 const addService = async () => {
+
   await dataStore.addService({
     vehicleId: vehicle.value.id,
     name: serviceName.value,
     description: serviceDescription.value,
     price: Number(servicePrice.value),
+    labor: Number(serviceLaborPrice.value),
     kilometers: Number(serviceKilometers.value),
     date: serviceDate.value
   })
@@ -38,6 +51,7 @@ const addService = async () => {
   serviceName.value = ''
   serviceDescription.value = ''
   servicePrice.value = ''
+  serviceLaborPrice.value = ''
   serviceKilometers.value = ''
   serviceDate.value = ''
 
@@ -46,118 +60,319 @@ const addService = async () => {
 
 </script>
 
+
 <template>
 
-  <div class="min-h-screen bg-[#0f0f0f] text-white p-6">
+  <div class="min-h-screen bg-[#0f0f0f] text-white px-6 py-10">
 
-    <button
-      @click="$router.push('/dashboard')"
-      class="mb-6 bg-[#046CC6] hover:bg-[#035aa5] transition px-5 py-3 rounded-2xl font-semibold"
-    >
-      ← Natrag na vozila
-    </button>
+    <div class="max-w-5xl mx-auto">
 
-    <div v-if="vehicle">
+      <!-- PODACI O VOZILU -->
+      <div v-if="vehicle">
 
-      <h1 class="text-3xl font-bold">
-        {{ vehicle.brand }} {{ vehicle.model }}
-      </h1>
+        <h1 class="text-4xl font-bold mb-2">
+          {{ vehicle.brand }} {{ vehicle.model }}
+        </h1>
 
-      <p class="text-gray-400 mt-2">
-        Godina: {{ vehicle.year }}
-      </p>
+        <p class="text-gray-400 mb-8">
+          {{ vehicle.year }} • {{ vehicle.registration }}
+        </p>
 
-      <p class="text-gray-400">
-        Registracija: {{ vehicle.registration }}
-      </p>
 
-      <p class="text-gray-400">
-        Kilometraža: {{ vehicle.kilometers }} km
-      </p>
+        <!-- INFORMACIJE O VOZILU -->
+        <div class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 mb-8">
 
-      <button
-        @click="showAddService = true"
-        class="mt-6 bg-orange-500 hover:bg-orange-600 transition px-5 py-3 rounded-2xl font-semibold"
-      >
-        + Dodaj servis
-      </button>
+          <h2 class="text-2xl font-bold mb-6">
+            Podaci o vozilu
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <div>
+              <p class="text-gray-400">
+                Marka
+              </p>
+
+              <p class="font-semibold">
+                {{ vehicle.brand }}
+              </p>
+            </div>
+
+            <div>
+              <p class="text-gray-400">
+                Model
+              </p>
+
+              <p class="font-semibold">
+                {{ vehicle.model }}
+              </p>
+            </div>
+
+            <div>
+              <p class="text-gray-400">
+                Godište
+              </p>
+
+              <p class="font-semibold">
+                {{ vehicle.year }}
+              </p>
+            </div>
+
+            <div>
+              <p class="text-gray-400">
+                Registracija
+              </p>
+
+              <p class="font-semibold">
+                {{ vehicle.registration }}
+              </p>
+            </div>
+
+            <div>
+              <p class="text-gray-400">
+                Kilometraža
+              </p>
+
+              <p class="font-semibold">
+                {{ vehicle.kilometers }} km
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- SERVISNA POVIJEST -->
+        <div class="flex justify-between items-center mb-6">
+
+          <h2 class="text-2xl font-bold">
+            Servisna povijest
+          </h2>
+
+          <button
+            @click="showAddService = true"
+            class="bg-[#046CC6] hover:bg-[#035aa5] transition px-5 py-3 rounded-xl font-semibold"
+          >
+            + Dodaj servis
+          </button>
+
+        </div>
+
+
+        <!-- POPIS SERVISA -->
+        <div
+          v-if="dataStore.services.length > 0"
+          class="space-y-4"
+        >
+
+          <div
+            v-for="service in dataStore.services"
+            :key="service.id"
+            class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6"
+          >
+
+            <div class="flex justify-between items-start">
+
+              <div>
+
+                <h3 class="text-xl font-bold">
+                  {{ service.name }}
+                </h3>
+
+                <p class="text-gray-400 mt-2">
+                  {{ service.description }}
+                </p>
+
+              </div>
+
+              <p class="text-gray-400">
+                {{ service.date }}
+              </p>
+
+            </div>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+              <div>
+
+                <p class="text-gray-400">
+                  Cijena dijelova/usluge
+                </p>
+
+                <p class="font-semibold">
+                  {{ service.price }} €
+                </p>
+
+              </div>
+
+
+              <div>
+
+                <p class="text-gray-400">
+                  Cijena rada
+                </p>
+
+                <p class="font-semibold">
+                  {{ service.labor }} €
+                </p>
+
+              </div>
+
+
+              <div>
+
+                <p class="text-gray-400">
+                  Kilometraža
+                </p>
+
+                <p class="font-semibold">
+                  {{ service.kilometers }} km
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- BRISANJE SERVISA -->
+            <button
+              @click="dataStore.deleteService(service.id)"
+              class="mt-5 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold"
+            >
+              Obriši servis
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- NEMA SERVISA -->
+        <div
+          v-else
+          class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
+        >
+
+          <p class="text-gray-400">
+            Za ovo vozilo još nema evidentiranih servisa.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- VOZILO NIJE PRONAĐENO -->
+      <div v-else>
+
+        <p class="text-gray-400">
+          Vozilo nije pronađeno.
+        </p>
+
+      </div>
 
     </div>
 
-    <div v-else>
 
-      <h1 class="text-3xl font-bold">
-        Vozilo nije pronađeno
-      </h1>
-
-    </div>
-
+    <!-- MODAL ZA DODAVANJE SERVISA -->
     <div
       v-if="showAddService"
-      class="fixed inset-0 bg-black/70 flex items-center justify-center p-6"
+      class="fixed inset-0 bg-black/70 flex items-center justify-center px-4"
     >
 
       <div
-        class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 w-full max-w-lg"
+        class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 w-full max-w-lg"
       >
 
         <h2 class="text-2xl font-bold mb-6">
           Dodaj servis
         </h2>
 
-        <form @submit.prevent="addService"
-            class="space-y-4">
 
+        <form
+          @submit.prevent="addService"
+          class="space-y-4"
+        >
+
+          <!-- NAZIV SERVISA -->
           <input
             v-model="serviceName"
             type="text"
             placeholder="Naziv servisa"
             required
-            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3"
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           />
 
+
+          <!-- OPIS -->
           <textarea
             v-model="serviceDescription"
             placeholder="Opis servisa"
-            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           ></textarea>
 
+
+          <!-- CIJENA DIJELOVA / USLUGE -->
           <input
             v-model="servicePrice"
             type="number"
-            placeholder="Cijena (€)"
+            min="0"
+            step="0.01"
+            placeholder="Cijena dijelova/usluge (€)"
             required
-            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3"
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           />
 
+
+          <!-- CIJENA RADA -->
+          <input
+            v-model="serviceLaborPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Cijena rada (€)"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          />
+
+
+          <!-- KILOMETRAŽA -->
           <input
             v-model="serviceKilometers"
             type="number"
+            min="0"
             placeholder="Kilometraža"
             required
-            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3"
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           />
 
+
+          <!-- DATUM -->
           <input
             v-model="serviceDate"
             type="date"
             required
-            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3"
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           />
 
-          <div class="flex gap-3 justify-end">
+
+          <!-- GUMBI -->
+          <div class="flex gap-3 pt-4">
 
             <button
               type="button"
               @click="showAddService = false"
-              class="bg-gray-700 hover:bg-gray-600 px-5 py-3 rounded-xl"
+              class="flex-1 bg-gray-700 hover:bg-gray-600 transition px-4 py-3 rounded-xl font-semibold"
             >
               Odustani
             </button>
 
             <button
               type="submit"
-              class="bg-orange-500 hover:bg-orange-600 px-5 py-3 rounded-xl font-semibold"
+              class="flex-1 bg-[#046CC6] hover:bg-[#035aa5] transition px-4 py-3 rounded-xl font-semibold"
             >
               Spremi servis
             </button>
@@ -169,56 +384,7 @@ const addService = async () => {
       </div>
 
     </div>
-<div
-  v-if="vehicle"
-  class="mt-10">
 
-  <h2 class="text-2xl font-bold mb-4">
-    Povijest servisa
-  </h2>
-
-  <div
-    v-if="dataStore.services.length === 0"
-    class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 text-gray-400"
-  >
-    Nema evidentiranih servisa.
-  </div>
-
-  <div
-    v-else
-    v-for="service in dataStore.services"
-    :key="service.id"
-    class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-5 mb-4"
-  >
-
-    <h3 class="text-xl font-bold">
-      {{ service.name }}
-    </h3>
-
-    <p class="text-gray-400 mt-2">
-      {{ service.description }}
-    </p>
-
-    <p class="text-gray-400">
-      Cijena: {{ service.price }} €
-    </p>
-
-    <p class="text-gray-400">
-      Kilometraža: {{ service.kilometers }} km
-    </p>
-
-    <p class="text-gray-400">
-      Datum: {{ service.date }}
-    </p>
-
-    <button @click="dataStore.deleteService(service.id)"
-      class="mt-4 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold">
-        Obriši servis
-    </button>
-
-  </div>
-
-</div>
   </div>
 
 </template>
