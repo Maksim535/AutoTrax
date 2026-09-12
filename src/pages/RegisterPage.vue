@@ -32,6 +32,7 @@ const registerUser = async () => {
     errorMessage.value = 'Registracija nije uspjela.'
   }
 }
+}
 </script>
 
 

@@ -19,7 +19,7 @@ const routes = [
     component: DashboardPage
   },
   {
-    path: '/vehicle',
+    path: '/vehicle/:id',
     component: VehiclePage
   }
 ]

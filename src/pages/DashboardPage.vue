@@ -1,9 +1,22 @@
 <script setup>
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useDataStore } from '../stores/dataStore'
+import { useRouter } from 'vue-router'
+
 
 const dataStore = useDataStore()
+const router = useRouter()
+
+
+
+onMounted(() => {
+  dataStore.getVehicles()
+})
+
+const openVehicle = (id) => {
+   router.push(`/vehicle/${id}`)
+}
 
 const showUserMenu = ref(false)
 const showAddVehicle = ref(false)
@@ -176,25 +189,175 @@ const addVehicle = async () => {
 
       </div>
 
-      <div class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-10 text-center">
+      <div>
 
-        <h3 class="text-xl font-semibold mb-2">
-          Nemate dodanih vozila
-        </h3>
+  <!-- Akojos ne postoji vozilo -->
+  <div
+    v-if="dataStore.vehicles.length === 0"
+    class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-10 text-center"
+  >
 
-        <p class="text-gray-400 mb-6">
-          Dodajte svoje prvo vozilo kako biste pratili servisnu povijest.
-        </p>
+    <h3 class="text-xl font-semibold mb-2">
+      Nemate dodanih vozila
+    </h3>
 
-        <button
-          class="bg-orange-500 hover:bg-orange-600 transition px-5 py-3 rounded-2xl font-semibold"
-        >
-          + Dodaj prvo vozilo
-        </button>
+    <p class="text-gray-400 mb-6">
+      Dodajte svoje prvo vozilo kako biste pratili servisnu povijest.
+    </p>
 
-      </div>
+    <button
+      @click="showAddVehicle = true"
+      class="bg-orange-500 hover:bg-orange-600 transition px-5 py-3 rounded-2xl font-semibold"
+    >
+      + Dodaj prvo vozilo
+    </button>
+
+  </div>
+
+  <!-- Ako postoje vozila ide ovaj dio -->
+  <div
+    v-else
+    class="grid grid-cols-1 md:grid-cols-2 gap-5"
+  >
+
+    <div
+      v-for="vehicle in dataStore.vehicles" :key="vehicle.id"
+      @click="openVehicle(vehicle.id)"
+      class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 cursor-pointer"
+>
+
+      <h3 class="text-2xl font-bold">
+        {{ vehicle.brand }} {{ vehicle.model }}
+      </h3>
+
+      <p class="text-gray-400 mt-2">
+        Godina: {{ vehicle.year }}
+      </p>
+
+      <p class="text-gray-400">
+        Registracija: {{ vehicle.registration }}
+      </p>
+
+      <p class="text-gray-400">
+        Kilometraža: {{ vehicle.kilometers }} km
+      </p>
 
     </div>
 
+  </div>
+
+</div>
+
+    </div>
+    <!-- Dodavanje vozila (podaci) -->
+<div
+  v-if="showAddVehicle"
+  class="fixed inset-0 bg-black/70 flex items-center justify-center p-6 z-50"
+>
+  <div
+    class="w-full max-w-lg bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8"
+  >
+
+    <div class="flex items-center justify-between mb-6">
+
+      <h2 class="text-2xl font-bold">
+        Dodaj vozilo
+      </h2>
+
+      <button
+        @click="showAddVehicle = false"
+        class="text-gray-400 hover:text-white text-xl"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <form
+      @submit.prevent="addVehicle"
+      class="space-y-4"
+    >
+
+      <div>
+        <label class="text-gray-300 text-sm block mb-2">
+          Marka
+        </label>
+
+        <input
+          v-model="brand"
+          type="text"
+          placeholder="npr. BMW"
+          required
+          class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label class="text-gray-300 text-sm block mb-2">
+          Model
+        </label>
+
+        <input
+          v-model="model"
+          type="text"
+          placeholder="npr. 320d"
+          required
+          class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label class="text-gray-300 text-sm block mb-2">
+          Godina proizvodnje
+        </label>
+
+        <input
+          v-model="year"
+          type="number"
+          placeholder="npr. 2020"
+          required
+          class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label class="text-gray-300 text-sm block mb-2">
+          Registracija
+        </label>
+
+        <input
+          v-model="registration"
+          type="text"
+          placeholder="npr. PU 123 AB"
+          required
+          class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <div>
+        <label class="text-gray-300 text-sm block mb-2">
+          Kilometraža
+        </label>
+
+        <input
+          v-model="kilometers"
+          type="number"
+          placeholder="npr. 85000"
+          required
+          class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-[#046CC6] hover:bg-[#035aa5] transition py-4 rounded-2xl text-white font-bold"
+      >
+        Spremi vozilo
+      </button>
+
+    </form>
+
+  </div>
+</div>
   </div>
 </template>
