@@ -221,28 +221,36 @@ const addVehicle = async () => {
   >
 
     <div
-      v-for="vehicle in dataStore.vehicles" :key="vehicle.id"
-      @click="openVehicle(vehicle.id)"
-      class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 cursor-pointer"
+  v-for="vehicle in dataStore.vehicles"
+  :key="vehicle.id"
+  @click="openVehicle(vehicle.id)"
+  class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 cursor-pointer"
 >
 
-      <h3 class="text-2xl font-bold">
-        {{ vehicle.brand }} {{ vehicle.model }}
-      </h3>
+  <h3 class="text-2xl font-bold">
+    {{ vehicle.brand }} {{ vehicle.model }}
+  </h3>
 
-      <p class="text-gray-400 mt-2">
-        Godina: {{ vehicle.year }}
-      </p>
+  <p class="text-gray-400 mt-2">
+    Godina: {{ vehicle.year }}
+  </p>
 
-      <p class="text-gray-400">
-        Registracija: {{ vehicle.registration }}
-      </p>
+  <p class="text-gray-400">
+    Registracija: {{ vehicle.registration }}
+  </p>
 
-      <p class="text-gray-400">
-        Kilometraža: {{ vehicle.kilometers }} km
-      </p>
+  <p class="text-gray-400">
+    Kilometraža: {{ vehicle.kilometers }} km
+  </p>
 
-    </div>
+  <button
+    @click.stop="dataStore.deleteVehicle(vehicle.id)"
+    class="mt-4 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold"
+  >
+    Obriši vozilo
+  </button>
+
+</div>
 
   </div>
 
