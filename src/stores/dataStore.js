@@ -118,7 +118,7 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-    async getServices(vehicleId) {
+        async getServices(vehicleId) {
       this.loading = true
       this.error = null
 
@@ -140,6 +140,23 @@ export const useDataStore = defineStore('data', {
 
       } finally {
         this.loading = false
+      }
+    },
+
+    async updateService(id, service) {
+      const serviceRef = doc(db, 'services', id)
+
+      await updateDoc(serviceRef, service)
+
+      const index = this.services.findIndex(
+        (service) => service.id === id
+      )
+
+      if (index !== -1) {
+        this.services[index] = {
+          id,
+          ...service
+        }
       }
     },
 

@@ -21,6 +21,18 @@ const serviceKilometers = ref('')
 const serviceDate = ref('')
 
 
+// UREĐIVANJE SERVISA
+const showEditService = ref(false)
+
+const editService = ref(null)
+const editServiceName = ref('')
+const editServiceDescription = ref('')
+const editServicePrice = ref('')
+const editServiceLaborPrice = ref('')
+const editServiceKilometers = ref('')
+const editServiceDate = ref('')
+
+
 // PRONALAŽENJE TRENUTNOG VOZILA
 const vehicle = computed(() => {
   return dataStore.vehicles.find(
@@ -56,6 +68,41 @@ const addService = async () => {
   serviceDate.value = ''
 
   showAddService.value = false
+}
+
+
+// OTVARANJE UREĐIVANJA SERVISA
+const openEditService = (service) => {
+
+  editService.value = service.id
+
+  editServiceName.value = service.name
+  editServiceDescription.value = service.description
+  editServicePrice.value = service.price
+  editServiceLaborPrice.value = service.labor
+  editServiceKilometers.value = service.kilometers
+  editServiceDate.value = service.date
+
+  showEditService.value = true
+}
+
+
+// SPREMANJE IZMJENA SERVISA
+const saveEditService = async () => {
+
+  await dataStore.updateService(
+    editService.value,
+    {
+      name: editServiceName.value,
+      description: editServiceDescription.value,
+      price: Number(editServicePrice.value),
+      labor: Number(editServiceLaborPrice.value),
+      kilometers: Number(editServiceKilometers.value),
+      date: editServiceDate.value
+    }
+  )
+
+  showEditService.value = false
 }
 
 </script>
@@ -236,7 +283,16 @@ const addService = async () => {
             </div>
 
 
-            <!-- BRISANJE SERVISA -->
+            <!-- GUMBI ZA SERVIS -->
+
+            <button
+              @click="openEditService(service)"
+              class="mt-5 mr-2 bg-[#046CC6] hover:bg-[#035aa5] transition px-4 py-2 rounded-xl font-semibold"
+            >
+              Uredi servis
+            </button>
+
+
             <button
               @click="dataStore.deleteService(service.id)"
               class="mt-5 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold"
@@ -277,6 +333,7 @@ const addService = async () => {
 
 
     <!-- MODAL ZA DODAVANJE SERVISA -->
+
     <div
       v-if="showAddService"
       class="fixed inset-0 bg-black/70 flex items-center justify-center px-4"
@@ -297,6 +354,7 @@ const addService = async () => {
         >
 
           <!-- NAZIV SERVISA -->
+
           <input
             v-model="serviceName"
             type="text"
@@ -307,6 +365,7 @@ const addService = async () => {
 
 
           <!-- OPIS -->
+
           <textarea
             v-model="serviceDescription"
             placeholder="Opis servisa"
@@ -316,6 +375,7 @@ const addService = async () => {
 
 
           <!-- CIJENA DIJELOVA / USLUGE -->
+
           <input
             v-model="servicePrice"
             type="number"
@@ -328,6 +388,7 @@ const addService = async () => {
 
 
           <!-- CIJENA RADA -->
+
           <input
             v-model="serviceLaborPrice"
             type="number"
@@ -340,6 +401,7 @@ const addService = async () => {
 
 
           <!-- KILOMETRAŽA -->
+
           <input
             v-model="serviceKilometers"
             type="number"
@@ -351,6 +413,7 @@ const addService = async () => {
 
 
           <!-- DATUM -->
+
           <input
             v-model="serviceDate"
             type="date"
@@ -360,6 +423,7 @@ const addService = async () => {
 
 
           <!-- GUMBI -->
+
           <div class="flex gap-3 pt-4">
 
             <button
@@ -375,6 +439,124 @@ const addService = async () => {
               class="flex-1 bg-[#046CC6] hover:bg-[#035aa5] transition px-4 py-3 rounded-xl font-semibold"
             >
               Spremi servis
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+
+    <!-- MODAL ZA UREĐIVANJE SERVISA -->
+
+    <div
+      v-if="showEditService"
+      class="fixed inset-0 bg-black/70 flex items-center justify-center px-4"
+    >
+
+      <div
+        class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 w-full max-w-lg"
+      >
+
+        <h2 class="text-2xl font-bold mb-6">
+          Uredi servis
+        </h2>
+
+
+        <form
+          @submit.prevent="saveEditService"
+          class="space-y-4"
+        >
+
+          <!-- NAZIV SERVISA -->
+
+          <input
+            v-model="editServiceName"
+            type="text"
+            placeholder="Naziv servisa"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          />
+
+
+          <!-- OPIS -->
+
+          <textarea
+            v-model="editServiceDescription"
+            placeholder="Opis servisa"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          ></textarea>
+
+
+          <!-- CIJENA DIJELOVA / USLUGE -->
+
+          <input
+            v-model="editServicePrice"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Cijena dijelova/usluge (€)"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          />
+
+
+          <!-- CIJENA RADA -->
+
+          <input
+            v-model="editServiceLaborPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Cijena rada (€)"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          />
+
+
+          <!-- KILOMETRAŽA -->
+
+          <input
+            v-model="editServiceKilometers"
+            type="number"
+            min="0"
+            placeholder="Kilometraža"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          />
+
+
+          <!-- DATUM -->
+
+          <input
+            v-model="editServiceDate"
+            type="date"
+            required
+            class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
+          />
+
+
+          <!-- GUMBI -->
+
+          <div class="flex gap-3 pt-4">
+
+            <button
+              type="button"
+              @click="showEditService = false"
+              class="flex-1 bg-gray-700 hover:bg-gray-600 transition px-4 py-3 rounded-xl font-semibold"
+            >
+              Odustani
+            </button>
+
+            <button
+              type="submit"
+              class="flex-1 bg-[#046CC6] hover:bg-[#035aa5] transition px-4 py-3 rounded-xl font-semibold"
+            >
+              Spremi promjene
             </button>
 
           </div>
