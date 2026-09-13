@@ -118,7 +118,7 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-        async getServices(vehicleId) {
+      async getServices(vehicleId) {
       this.loading = true
       this.error = null
 
@@ -142,6 +142,29 @@ export const useDataStore = defineStore('data', {
         this.loading = false
       }
     },
+
+  async getAllServices() {
+  this.loading = true
+  this.error = null
+
+  try {
+    const snapshot = await getDocs(
+      collection(db, 'services')
+    )
+
+    this.services = snapshot.docs.map((document) => ({
+      id: document.id,
+      ...document.data()
+    }))
+
+  } catch (error) {
+    this.error = error.message
+    throw error
+
+  } finally {
+    this.loading = false
+  }
+},
 
     async updateService(id, service) {
       const serviceRef = doc(db, 'services', id)

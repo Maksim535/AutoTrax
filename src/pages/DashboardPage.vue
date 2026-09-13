@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useDataStore } from '../stores/dataStore'
 import { useRouter } from 'vue-router'
 
@@ -19,8 +19,28 @@ const router = useRouter()
 
 onMounted(() => {
   dataStore.getVehicles()
+  dataStore.getAllServices()
 })
 
+// ----------------------------------
+
+// STATISTIKA PRIKUPLJANJE I RACUNANJE UKUPNO
+
+//-------------------------------------
+
+const totalVehicles = computed(() => {
+  return dataStore.vehicles.length
+})
+
+const totalServices = computed(() => {
+  return dataStore.services.length
+})
+
+const totalCost = computed(() => {
+  return dataStore.services.reduce((total, service) => {
+    return total + service.price + service.labor
+  }, 0)
+})
 
 // =============================
 // UI VARIJABLE
@@ -271,7 +291,7 @@ const addVehicle = async () => {
         </p>
 
         <h3 class="text-4xl font-bold mt-2">
-          0
+          {{ totalVehicles }}
         </h3>
 
       </div>
@@ -286,7 +306,7 @@ const addVehicle = async () => {
         </p>
 
         <h3 class="text-4xl font-bold mt-2">
-          0
+          {{ totalServices }}
         </h3>
 
       </div>
@@ -301,7 +321,7 @@ const addVehicle = async () => {
         </p>
 
         <h3 class="text-4xl font-bold mt-2">
-          0 €
+          {{ totalCost }} €
         </h3>
 
       </div>
