@@ -3,7 +3,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
-
+import Navigation from '../components/Navigation.vue'
 
 // PINIA STORE I ROUTER
 const route = useRoute()
@@ -111,6 +111,9 @@ const saveEditService = async () => {
 <template>
 
   <div class="min-h-screen bg-[#0f0f0f] text-white px-6 py-10">
+
+    <Navigation />
+
 
     <div class="max-w-5xl mx-auto">
 
