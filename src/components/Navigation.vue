@@ -2,9 +2,16 @@
 
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const showUserMenu = ref(false)
+const authStore = useAuthStore()
+
+const logout = async () => {
+  await authStore.logout()
+  router.push('/')
+}
 
 </script>
 
@@ -92,6 +99,7 @@ const showUserMenu = ref(false)
 
 
           <button
+          @click="logout"
             class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition"
           >
             Odjava
