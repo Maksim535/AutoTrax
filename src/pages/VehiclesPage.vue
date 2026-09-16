@@ -4,12 +4,63 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import Navigation from '../components/Navigation.vue'
+import { ref as firebaseRef, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { storage } from '../firebase'
 
 const router = useRouter()
 const dataStore = useDataStore()
 
 const showPriceInput = ref(null)
 const purchasePrice = ref('')
+
+const selectedImage = ref(null)
+const uploadingImage = ref(false)
+const uploadError = ref('')
+
+const selectImage = (event) => {
+  selectedImage.value = event.target.files[0]
+  uploadError.value = ''
+}
+
+const uploadVehicleImage = async (vehicle) => {
+
+  if (!selectedImage.value) {
+    return
+  }
+
+  uploadingImage.value = true
+  uploadError.value = ''
+
+  try {
+
+    const imageRef = firebaseRef(
+      storage,
+      `vehicles/${vehicle.id}/${selectedImage.value.name}`
+    )
+
+    await uploadBytes(imageRef, selectedImage.value)
+
+    const imageUrl = await getDownloadURL(imageRef)
+
+    await dataStore.updateVehicle(vehicle.id, {
+      ...vehicle,
+      imageUrl: imageUrl
+    })
+
+    selectedImage.value = null
+
+  } catch (error) {
+
+    console.error('GREŠKA KOD UPLOADA:', error)
+
+    uploadError.value = 'Slika se trenutno ne može učitati.'
+
+  } finally {
+
+    uploadingImage.value = false
+
+  }
+}
 
 onMounted(() => {
   dataStore.getVehicles()
@@ -80,7 +131,7 @@ const savePrice = async (vehicle) => {
     </div>
 
 
-    <!-- VOZILA -->
+    <!-- prikaz postojecih vozila -->
 
     <div
       v-if="dataStore.vehicles.length > 0"
@@ -102,7 +153,42 @@ const savePrice = async (vehicle) => {
         </p>
 
 
-        <!-- CIJENA -->
+        <!-- SLIKA VOZILA -->
+
+        <div class="mt-4">
+
+          <img
+            v-if="vehicle.imageUrl"
+            :src="vehicle.imageUrl"
+            class="w-full h-48 object-cover rounded-xl mb-3"
+          />
+
+          <input
+            type="file"
+            accept="image/*"
+            @change="selectImage"
+            class="w-full text-sm text-gray-400"
+          />
+
+          <button
+            @click="uploadVehicleImage(vehicle)"
+            :disabled="!selectedImage || uploadingImage"
+            class="mt-3 bg-[#046CC6] px-4 py-2 rounded-xl text-sm hover:opacity-90 transition disabled:opacity-50"
+          >
+            {{ uploadingImage ? 'Učitavanje...' : 'Dodaj sliku' }}
+          </button>
+
+          <p
+            v-if="uploadError"
+            class="text-red-400 text-sm mt-3"
+          >
+            {{ uploadError }}
+          </p>
+
+        </div>
+
+
+        <!-- Cijena auta -->
 
         <div class="mt-4">
 
@@ -133,7 +219,7 @@ const savePrice = async (vehicle) => {
           </button>
 
 
-          <!-- UNOS CIJENE -->
+          <!-- Unosimo cijenu -->
 
           <div
             v-if="showPriceInput === vehicle.id"
@@ -186,7 +272,7 @@ const savePrice = async (vehicle) => {
     </div>
 
 
-    <!-- NEMA VOZILA -->
+    <!-- tu ako nema vozila-->
 
     <div
       v-else

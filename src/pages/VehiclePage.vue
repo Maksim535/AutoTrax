@@ -4,6 +4,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import Navigation from '../components/Navigation.vue'
+import jsPDF from 'jspdf'
 
 // PINIA STORE I ROUTER
 const route = useRoute()
@@ -71,7 +72,7 @@ const addService = async () => {
 }
 
 
-// OTVARANJE UREĐIVANJA SERVISA
+// otvaranje uredenja servisa
 const openEditService = (service) => {
 
   editService.value = service.id
@@ -87,7 +88,7 @@ const openEditService = (service) => {
 }
 
 
-// SPREMANJE IZMJENA SERVISA
+// spremanje izmjene servisa
 const saveEditService = async () => {
 
   await dataStore.updateService(
@@ -103,6 +104,28 @@ const saveEditService = async () => {
   )
 
   showEditService.value = false
+}
+
+// Exportamo pdf servisa
+
+const exportPDF = () => {
+  const pdf = new jsPDF()
+
+  pdf.text(`AutoTrax - ${vehicle.value.brand} ${vehicle.value.model}`, 20, 20)
+
+  let y = 35
+
+  dataStore.services.forEach((service) => {
+    const total = Number(service.price || 0) + Number(service.labor || 0)
+
+    pdf.text(`${service.name} - ${service.date}`, 20, y)
+    pdf.text(`Kilometri: ${service.kilometers} km`, 20, y + 7)
+    pdf.text(`Ukupno: ${total} €`, 20, y + 14)
+
+    y += 25
+  })
+
+  pdf.save(`${vehicle.value.brand}-${vehicle.value.model}.pdf`)
 }
 
 </script>
@@ -191,6 +214,10 @@ const saveEditService = async () => {
           </div>
 
         </div>
+        <button @click="exportPDF"
+        class="bg-[#046CC6] px-5 py-3 rounded-xl mt-4 mb-8">
+             Izvezi PDF
+        </button>
 
 
         <!-- SERVISNA POVIJEST -->
