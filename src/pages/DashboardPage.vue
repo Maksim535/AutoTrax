@@ -8,23 +8,12 @@ import trashIcon from '../assets/smece.png'
 import { useAuthStore } from '../stores/auth'
 
 
-// =============================
-// PINIA I ROUTER
-// =============================
 
 const dataStore = useDataStore()
 const router = useRouter()
 const authStore = useAuthStore()
-
-// ZA POPUP BRISANJA VOZILA
-
 const showDeleteModal = ref(false)
 const vehicleToDelete = ref(null)
-
-
-// =============================
-// UČITAVANJE VOZILA
-// =============================
 
 onMounted(() => {
   dataStore.getVehicles()
@@ -32,9 +21,7 @@ onMounted(() => {
 })
 
 
-// =============================
-// STATISTIKA
-// =============================
+
 
 const totalVehicles = computed(() => {
   return dataStore.vehicles.length
@@ -51,16 +38,9 @@ const totalCost = computed(() => {
 })
 
 
-// =============================
-// UI VARIJABLE
-// =============================
-
 const showUserMenu = ref(false)
 
 
-// =============================
-// DODAVANJE VOZILA
-// =============================
 
 const showAddVehicle = ref(false)
 
@@ -73,9 +53,6 @@ const kilometers = ref('')
 const validationError = ref('')
 
 
-// =============================
-// UREĐIVANJE VOZILA
-// =============================
 
 const showEditVehicle = ref(false)
 
@@ -88,15 +65,10 @@ const editRegistration = ref('')
 const editKilometers = ref('')
 
 
-// =============================
-// OTVARANJE DETALJA VOZILA
-// =============================
-
 const openVehicle = (id) => {
   router.push(`/vehicle/${id}`)
 }
 
-// ZA POPUP
 
 const openDeleteModal = (vehicle) => {
   vehicleToDelete.value = vehicle
@@ -114,7 +86,7 @@ const confirmDeleteVehicle = async () => {
   vehicleToDelete.value = null
 }
 
-// OBRISI VOZILO 
+ 
 
 const deleteVehicle = async (id) => {
   const confirmed = confirm(
@@ -402,9 +374,7 @@ const addVehicle = async () => {
     </div>
 
 
-    <!-- ========================= -->
-    <!-- MODAL ZA DODAVANJE VOZILA -->
-    <!-- ========================= -->
+   
 
     <div
       v-if="showAddVehicle"
@@ -532,8 +502,6 @@ const addVehicle = async () => {
           </div>
 
 
-          <!-- PORUKA O GREŠCI -->
-
           <p
             v-if="validationError"
             class="text-red-400 text-sm"
@@ -556,9 +524,7 @@ const addVehicle = async () => {
     </div>
 
 
-    <!-- ========================= -->
-    <!-- MODAL ZA UREĐIVANJE VOZILA -->
-    <!-- ========================= -->
+   
 
     <div
       v-if="showEditVehicle"
@@ -708,7 +674,7 @@ const addVehicle = async () => {
 
     </div>
 
-    <!-- POPUP ZA BRISANJE VOZILA -->
+  
 
 <div
   v-if="showDeleteModal"
