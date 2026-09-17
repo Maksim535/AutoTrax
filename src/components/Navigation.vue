@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import logoutIcon from '../assets/odjava.png'
@@ -14,6 +14,29 @@ const logout = async () => {
   await authStore.logout()
   router.push('/')
 }
+
+
+// INICIJALI KORISNIKA
+
+const userInitials = computed(() => {
+
+  const name = authStore.user?.displayName
+
+  if (!name) {
+    return 'U'
+  }
+
+  const words = name.trim().split(/\s+/)
+
+  if (words.length === 1) {
+    return words[0].charAt(0).toUpperCase()
+  }
+
+  return (
+    words[0].charAt(0) +
+    words[1].charAt(0)
+  ).toUpperCase()
+})
 
 </script>
 
@@ -82,7 +105,7 @@ const logout = async () => {
           @click="showUserMenu = !showUserMenu"
           class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-black font-bold text-sm"
         >
-          ML
+          {{ userInitials }}
         </button>
 
 
@@ -101,7 +124,7 @@ const logout = async () => {
 
 
           <button
-          @click="showLogoutModal = true"
+            @click="showLogoutModal = true"
             class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition"
           >
             Odjava
@@ -112,50 +135,55 @@ const logout = async () => {
       </div>
 
     </div>
+
+
     <!-- POPUP ZA POTVRDU ODJAVE -->
 
-<div
-  v-if="showLogoutModal"
-  class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
->
-  <div
-    class="w-full max-w-sm bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
-  >
+    <div
+      v-if="showLogoutModal"
+      class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+    >
 
-    <img
-      :src="logoutIcon"
-      alt="Odjava"
-      class="w-16 h-16 mx-auto mb-5"
-    />
-
-    <h2 class="text-2xl font-bold mb-2">
-      Jeste li sigurni?
-    </h2>
-
-    <p class="text-gray-400 mb-7">
-      Jeste li sigurni da se želite odjaviti?
-    </p>
-
-    <div class="flex gap-3">
-
-      <button
-        @click="showLogoutModal = false"
-        class="flex-1 bg-[#263143] hover:bg-[#334155] transition py-3 rounded-xl font-semibold"
+      <div
+        class="w-full max-w-sm bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
       >
-        Poništi
-      </button>
 
-      <button
-        @click="logout"
-        class="flex-1 bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
-      >
-        Odjavi se
-      </button>
+        <img
+          :src="logoutIcon"
+          alt="Odjava"
+          class="w-16 h-16 mx-auto mb-5"
+        />
+
+        <h2 class="text-2xl font-bold mb-2">
+          Jeste li sigurni?
+        </h2>
+
+        <p class="text-gray-400 mb-7">
+          Jeste li sigurni da se želite odjaviti?
+        </p>
+
+        <div class="flex gap-3">
+
+          <button
+            @click="showLogoutModal = false"
+            class="flex-1 bg-[#263143] hover:bg-[#334155] transition py-3 rounded-xl font-semibold"
+          >
+            Poništi
+          </button>
+
+          <button
+            @click="logout"
+            class="flex-1 bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
+          >
+            Odjavi se
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
-  </div>
-</div>
   </div>
 
 </template>
