@@ -144,9 +144,14 @@ const registerUser = async () => {
 
       <div class="text-center mt-7">
 
-        <p class="text-gray-400">
+        <span class="text-gray-400">
           Već imate račun?
-        </p>
+        </span>
+
+        <button @click="router.push('/')"
+        class="text-orange-500 hover:text-orange-400 mt-2">
+        Prijavite se
+        </button>
 
       </div>
 
