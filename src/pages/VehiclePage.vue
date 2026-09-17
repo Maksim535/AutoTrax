@@ -537,7 +537,7 @@ const exportPDF = () => {
             type="number"
             min="0"
             step="0.01"
-            placeholder="Cijena dijelova/usluge (€)"
+            placeholder="Cijena dijelova (€)"
             required
             class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           />
@@ -655,7 +655,7 @@ const exportPDF = () => {
             type="number"
             min="0"
             step="0.01"
-            placeholder="Cijena dijelova/usluge (€)"
+            placeholder="Cijena dijelova (€)"
             required
             class="w-full bg-[#0f0f0f] border border-[#2a2a2a] rounded-xl px-4 py-3 outline-none"
           />
