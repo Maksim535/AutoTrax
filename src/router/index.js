@@ -8,6 +8,7 @@ import DashboardPage from '../pages/DashboardPage.vue'
 import ServicesPage from '../pages/ServicesPage.vue'
 import VehiclePage from '../pages/VehiclePage.vue'
 import VehiclesPage from '../pages/VehiclesPage.vue'
+import AccountPage from '../pages/AccountPage.vue'
 
 const routes = [
   {
@@ -31,6 +32,9 @@ const routes = [
   },
   { path: '/services',
     component: ServicesPage, meta: { requiresAuth: true }
+  },
+  { path: '/account',
+    component: AccountPage, meta: { requiresAuth: true }
   }
 ]
 

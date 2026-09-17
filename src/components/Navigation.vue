@@ -114,11 +114,11 @@ const userInitials = computed(() => {
           class="absolute right-0 mt-3 w-44 bg-[#171717] border border-[#2a2a2a] rounded-2xl shadow-2xl p-2 z-50"
         >
 
-          <button
-            class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-[#222222] hover:text-white transition"
-          >
-            Moj račun
+          <button @click="router.push('/account')"
+          class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-[#222222] hover:text-white transition">
+                Moj račun
           </button>
+          
 
 
           <button
