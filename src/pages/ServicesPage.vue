@@ -19,6 +19,18 @@ const totalCost = computed(() => {
   }, 0)
 })
 
+const lastService = computed(() => {
+  if (dataStore.services.length === 0) {
+    return '-'
+  }
+
+  const services = [...dataStore.services].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  )
+
+  return services[0].date
+})
+
 const getVehicleName = (vehicleId) => {
   const vehicle = dataStore.vehicles.find(
     (vehicle) => vehicle.id === vehicleId
@@ -62,7 +74,7 @@ const openVehicle = (vehicleId) => {
 
     <!-- STATISTIKA -->
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
       <div class="bg-[#171717] border border-[#2a2a2a] rounded-2xl p-6">
 
@@ -88,6 +100,18 @@ const openVehicle = (vehicleId) => {
         </p>
 
       </div>
+
+      <div class="bg-[#171717] border border-[#2a2a2a] rounded-2xl p-6">
+
+        <p class="text-gray-400 text-sm">
+             Posljednji servis
+        </p>
+
+        <p class="text-3xl font-bold mt-2">
+           {{ lastService }}
+        </p>
+
+</div>
 
     </div>
 

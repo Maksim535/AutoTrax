@@ -18,7 +18,7 @@ const logout = async () => {
 
 <template>
 
-  <div class="flex items-center justify-between mb-8">
+  <div class="bg-[#333333] -mx-6 px-6 py-4 mb-8 flex items-center justify-between">
 
     <!-- LOGO -->
 
