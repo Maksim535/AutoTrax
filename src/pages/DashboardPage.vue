@@ -222,7 +222,7 @@ const addVehicle = async () => {
 
     <div class="mb-8">
 
-      <p class="text-gray-400 text-sm">
+      <p class="text-gray-400 text-lg">
         Dobrodošli natrag
       </p>
 
@@ -244,7 +244,7 @@ const addVehicle = async () => {
         class="bg-[#171717] p-6 rounded-3xl border border-[#2a2a2a]"
       >
 
-        <p class="text-gray-400 text-sm">
+        <p class="text-gray-400 text-lg">
           Ukupno vozila
         </p>
 
@@ -259,7 +259,7 @@ const addVehicle = async () => {
         class="bg-[#171717] p-6 rounded-3xl border border-[#2a2a2a]"
       >
 
-        <p class="text-gray-400 text-sm">
+        <p class="text-gray-400 text-lg">
           Servisni zapisi
         </p>
 
@@ -274,7 +274,7 @@ const addVehicle = async () => {
         class="bg-[#171717] p-6 rounded-3xl border border-[#2a2a2a]"
       >
 
-        <p class="text-gray-400 text-sm">
+        <p class="text-gray-400 text-lg">
           Ukupni trošak
         </p>
 

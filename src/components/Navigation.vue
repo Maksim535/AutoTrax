@@ -51,9 +51,7 @@ const userInitials = computed(() => {
 
       <h1 class="text-2xl font-bold text-white">
 
-        Auto<span class="text-[#046CC6]">
-          Trax
-        </span>
+        Auto<span class="text-[#046CC6]">Trax</span>
 
       </h1>
 

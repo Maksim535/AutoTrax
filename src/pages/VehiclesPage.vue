@@ -105,7 +105,7 @@ const savePrice = async (vehicle) => {
 
     <div class="bg-[#171717] border border-[#2a2a2a] rounded-2xl p-6 mb-8">
 
-      <p class="text-gray-400 text-sm">
+      <p class="text-gray-400 text-lg">
         Vrijednost garaže
       </p>
 

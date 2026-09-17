@@ -48,7 +48,7 @@ const loginUser = async () => {
           Auto<span class="text-[#046CC6]">Trax</span>
         </h1>
 
-        <p class="text-gray-400 mt-3 text-sm">
+        <p class="text-gray-400 mt-3 text-lg">
           Digitalna povijest servisa vozila
         </p>
 
