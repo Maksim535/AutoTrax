@@ -17,6 +17,7 @@ const registerUser = async () => {
 
   try {
     await authStore.register(
+      name.value,
       email.value,
       password.value
     )

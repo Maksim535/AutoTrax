@@ -5,10 +5,12 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  query,
+  where
 } from 'firebase/firestore'
 
-import { db } from '../firebase'
+import { auth, db } from '../firebase'
 
 export const useDataStore = defineStore('data', {
   state: () => ({
@@ -20,19 +22,28 @@ export const useDataStore = defineStore('data', {
 
   actions: {
 
+    // =============================
+    // VOZILA
+    // =============================
+
     async addVehicle(vehicle) {
       this.loading = true
       this.error = null
 
       try {
+        const vehicleWithUser = {
+          ...vehicle,
+          userId: auth.currentUser.uid
+        }
+
         const docRef = await addDoc(
           collection(db, 'vehicles'),
-          vehicle
+          vehicleWithUser
         )
 
         this.vehicles.push({
           id: docRef.id,
-          ...vehicle
+          ...vehicleWithUser
         })
 
       } catch (error) {
@@ -44,14 +55,18 @@ export const useDataStore = defineStore('data', {
       }
     },
 
+
     async getVehicles() {
       this.loading = true
       this.error = null
 
       try {
-        const snapshot = await getDocs(
-          collection(db, 'vehicles')
+        const q = query(
+          collection(db, 'vehicles'),
+          where('userId', '==', auth.currentUser.uid)
         )
+
+        const snapshot = await getDocs(q)
 
         this.vehicles = snapshot.docs.map((document) => ({
           id: document.id,
@@ -67,6 +82,7 @@ export const useDataStore = defineStore('data', {
       }
     },
 
+
     async updateVehicle(id, vehicle) {
       const vehicleRef = doc(db, 'vehicles', id)
 
@@ -78,13 +94,31 @@ export const useDataStore = defineStore('data', {
 
       if (index !== -1) {
         this.vehicles[index] = {
-          id,
+          ...this.vehicles[index],
           ...vehicle
         }
       }
     },
 
+
     async deleteVehicle(id) {
+
+      const snapshot = await getDocs(
+        collection(db, 'services')
+      )
+
+      const vehicleServices = snapshot.docs.filter(
+        (document) =>
+          document.data().vehicleId === id &&
+          document.data().userId === auth.currentUser.uid
+      )
+
+      for (const service of vehicleServices) {
+        await deleteDoc(
+          doc(db, 'services', service.id)
+        )
+      }
+
       await deleteDoc(
         doc(db, 'vehicles', id)
       )
@@ -92,21 +126,35 @@ export const useDataStore = defineStore('data', {
       this.vehicles = this.vehicles.filter(
         (vehicle) => vehicle.id !== id
       )
+
+      this.services = this.services.filter(
+        (service) => service.vehicleId !== id
+      )
     },
+
+
+    // =============================
+    // SERVISI
+    // =============================
 
     async addService(service) {
       this.loading = true
       this.error = null
 
       try {
+        const serviceWithUser = {
+          ...service,
+          userId: auth.currentUser.uid
+        }
+
         const docRef = await addDoc(
           collection(db, 'services'),
-          service
+          serviceWithUser
         )
 
         this.services.push({
           id: docRef.id,
-          ...service
+          ...serviceWithUser
         })
 
       } catch (error) {
@@ -118,21 +166,27 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-      async getServices(vehicleId) {
+
+    async getServices(vehicleId) {
       this.loading = true
       this.error = null
 
       try {
-        const snapshot = await getDocs(
-          collection(db, 'services')
+        const q = query(
+          collection(db, 'services'),
+          where('userId', '==', auth.currentUser.uid)
         )
+
+        const snapshot = await getDocs(q)
 
         this.services = snapshot.docs
           .map((document) => ({
             id: document.id,
             ...document.data()
           }))
-          .filter((service) => service.vehicleId === vehicleId)
+          .filter(
+            (service) => service.vehicleId === vehicleId
+          )
 
       } catch (error) {
         this.error = error.message
@@ -143,28 +197,33 @@ export const useDataStore = defineStore('data', {
       }
     },
 
-  async getAllServices() {
-  this.loading = true
-  this.error = null
 
-  try {
-    const snapshot = await getDocs(
-      collection(db, 'services')
-    )
+    async getAllServices() {
+      this.loading = true
+      this.error = null
 
-    this.services = snapshot.docs.map((document) => ({
-      id: document.id,
-      ...document.data()
-    }))
+      try {
+        const q = query(
+          collection(db, 'services'),
+          where('userId', '==', auth.currentUser.uid)
+        )
 
-  } catch (error) {
-    this.error = error.message
-    throw error
+        const snapshot = await getDocs(q)
 
-  } finally {
-    this.loading = false
-  }
-},
+        this.services = snapshot.docs.map((document) => ({
+          id: document.id,
+          ...document.data()
+        }))
+
+      } catch (error) {
+        this.error = error.message
+        throw error
+
+      } finally {
+        this.loading = false
+      }
+    },
+
 
     async updateService(id, service) {
       const serviceRef = doc(db, 'services', id)
@@ -177,11 +236,12 @@ export const useDataStore = defineStore('data', {
 
       if (index !== -1) {
         this.services[index] = {
-          id,
+          ...this.services[index],
           ...service
         }
       }
     },
+
 
     async deleteService(id) {
       await deleteDoc(

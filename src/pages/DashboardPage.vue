@@ -4,6 +4,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useDataStore } from '../stores/dataStore'
 import { useRouter } from 'vue-router'
 import Navigation from '../components/Navigation.vue'
+import trashIcon from '../assets/smece.png'
+import { useAuthStore } from '../stores/auth'
 
 
 // =============================
@@ -12,6 +14,12 @@ import Navigation from '../components/Navigation.vue'
 
 const dataStore = useDataStore()
 const router = useRouter()
+const authStore = useAuthStore()
+
+// ZA POPUP BRISANJA VOZILA
+
+const showDeleteModal = ref(false)
+const vehicleToDelete = ref(null)
 
 
 // =============================
@@ -88,6 +96,37 @@ const openVehicle = (id) => {
   router.push(`/vehicle/${id}`)
 }
 
+// ZA POPUP
+
+const openDeleteModal = (vehicle) => {
+  vehicleToDelete.value = vehicle
+  showDeleteModal.value = true
+}
+
+const confirmDeleteVehicle = async () => {
+  if (!vehicleToDelete.value) {
+    return
+  }
+
+  await dataStore.deleteVehicle(vehicleToDelete.value.id)
+
+  showDeleteModal.value = false
+  vehicleToDelete.value = null
+}
+
+// OBRISI VOZILO 
+
+const deleteVehicle = async (id) => {
+  const confirmed = confirm(
+    'Jeste li sigurni da želite izbrisati ovo vozilo?'
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  await dataStore.deleteVehicle(id)
+}
 
 // =============================
 // OTVARANJE UREĐIVANJA VOZILA
@@ -188,7 +227,7 @@ const addVehicle = async () => {
       </p>
 
       <h2 class="text-4xl font-bold mt-1">
-        Početna
+         {{ authStore.user?.displayName }}
       </h2>
 
     </div>
@@ -349,10 +388,8 @@ const addVehicle = async () => {
 
             <!-- OBRIŠI -->
 
-            <button
-              @click.stop="dataStore.deleteVehicle(vehicle.id)"
-              class="mt-4 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold"
-            >
+            <button @click.stop="openDeleteModal(vehicle)"
+              class="mt-4 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold">
               Obriši vozilo
             </button>
 
@@ -671,6 +708,50 @@ const addVehicle = async () => {
 
     </div>
 
+    <!-- POPUP ZA BRISANJE VOZILA -->
+
+<div
+  v-if="showDeleteModal"
+  class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+>
+  <div
+    class="w-full max-w-sm bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
+  >
+
+    <img
+      :src="trashIcon"
+      alt="Brisanje"
+      class="w-16 h-16 mx-auto mb-5"
+    />
+
+    <h2 class="text-2xl font-bold mb-2">
+      Jeste li sigurni?
+    </h2>
+
+    <p class="text-gray-400 mb-7">
+      Vozilo će biti trajno izbrisano.
+    </p>
+
+    <div class="flex gap-3">
+
+      <button
+        @click="showDeleteModal = false"
+        class="flex-1 bg-[#263143] hover:bg-[#334155] transition py-3 rounded-xl font-semibold"
+      >
+        Poništi
+      </button>
+
+      <button
+        @click="confirmDeleteVehicle"
+        class="flex-1 bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
+      >
+        Izbriši
+      </button>
+
+    </div>
+
+  </div>
+</div>
   </div>
 
 </template>

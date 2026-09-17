@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia'
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updateProfile
 } from 'firebase/auth'
+
 
 import { auth } from '../firebase'
 
@@ -16,27 +19,33 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   actions: {
-    async register(email, password) {
-      this.loading = true
-      this.error = null
+    async register(name, email, password) {
+  this.loading = true
+  this.error = null
 
-      try {
-        const result = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        )
+  try {
+    const result = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
 
-        this.user = result.user
+    await updateProfile(result.user, {
+      displayName: name
+    })
 
-        return result.user
-      } catch (error) {
-        this.error = error.message
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
+    this.user = result.user
+
+    return result.user
+
+  } catch (error) {
+    this.error = error.message
+    throw error
+
+  } finally {
+    this.loading = false
+  }
+},
 
     async login(email, password) {
       this.loading = true

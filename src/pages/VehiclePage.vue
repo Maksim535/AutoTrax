@@ -5,13 +5,25 @@ import { useRoute } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import Navigation from '../components/Navigation.vue'
 import jsPDF from 'jspdf'
+import trashIcon from '../assets/smece.png'
+
+import datumIcon from '../assets/datum.png'
+import cijenaDijelovaIcon from '../assets/cijenaDijelova.png'
+import cijenaRadaIcon from '../assets/cijenaRada.png'
+import kilometriIcon from '../assets/kilometri.png'
+
 
 // PINIA STORE I ROUTER
+
 const route = useRoute()
 const dataStore = useDataStore()
 
+const showDeleteServiceModal = ref(false)
+const serviceToDelete = ref(null)
+
 
 // DODAVANJE SERVISA
+
 const showAddService = ref(false)
 
 const serviceName = ref('')
@@ -23,6 +35,7 @@ const serviceDate = ref('')
 
 
 // UREĐIVANJE SERVISA
+
 const showEditService = ref(false)
 
 const editService = ref(null)
@@ -35,6 +48,7 @@ const editServiceDate = ref('')
 
 
 // PRONALAŽENJE TRENUTNOG VOZILA
+
 const vehicle = computed(() => {
   return dataStore.vehicles.find(
     (vehicle) => vehicle.id === route.params.id
@@ -43,12 +57,14 @@ const vehicle = computed(() => {
 
 
 // UČITAVANJE SERVISA ZA TRENUTNO VOZILO
+
 onMounted(() => {
   dataStore.getServices(route.params.id)
 })
 
 
 // SPREMANJE NOVOG SERVISA
+
 const addService = async () => {
 
   await dataStore.addService({
@@ -72,7 +88,8 @@ const addService = async () => {
 }
 
 
-// otvaranje uredenja servisa
+// OTVARANJE UREĐENJA SERVISA
+
 const openEditService = (service) => {
 
   editService.value = service.id
@@ -88,7 +105,28 @@ const openEditService = (service) => {
 }
 
 
-// spremanje izmjene servisa
+// ZA POPUP BRISANJE SERVISA
+
+const openDeleteServiceModal = (service) => {
+  serviceToDelete.value = service
+  showDeleteServiceModal.value = true
+}
+
+
+const confirmDeleteService = async () => {
+  if (!serviceToDelete.value) {
+    return
+  }
+
+  await dataStore.deleteService(serviceToDelete.value.id)
+
+  showDeleteServiceModal.value = false
+  serviceToDelete.value = null
+}
+
+
+// SPREMANJE IZMJENE SERVISA
+
 const saveEditService = async () => {
 
   await dataStore.updateService(
@@ -106,26 +144,50 @@ const saveEditService = async () => {
   showEditService.value = false
 }
 
-// Exportamo pdf servisa
+
+// EXPORTAMO PDF SERVISA
 
 const exportPDF = () => {
   const pdf = new jsPDF()
 
-  pdf.text(`AutoTrax - ${vehicle.value.brand} ${vehicle.value.model}`, 20, 20)
+  pdf.text(
+    `AutoTrax - ${vehicle.value.brand} ${vehicle.value.model}`,
+    20,
+    20
+  )
 
   let y = 35
 
   dataStore.services.forEach((service) => {
-    const total = Number(service.price || 0) + Number(service.labor || 0)
 
-    pdf.text(`${service.name} - ${service.date}`, 20, y)
-    pdf.text(`Kilometri: ${service.kilometers} km`, 20, y + 7)
-    pdf.text(`Ukupno: ${total} €`, 20, y + 14)
+    const total =
+      Number(service.price || 0) +
+      Number(service.labor || 0)
+
+    pdf.text(
+      `${service.name} - ${service.date}`,
+      20,
+      y
+    )
+
+    pdf.text(
+      `Kilometri: ${service.kilometers} km`,
+      20,
+      y + 7
+    )
+
+    pdf.text(
+      `Ukupno: ${total} €`,
+      20,
+      y + 14
+    )
 
     y += 25
   })
 
-  pdf.save(`${vehicle.value.brand}-${vehicle.value.model}.pdf`)
+  pdf.save(
+    `${vehicle.value.brand}-${vehicle.value.model}.pdf`
+  )
 }
 
 </script>
@@ -140,7 +202,9 @@ const exportPDF = () => {
 
     <div class="max-w-5xl mx-auto">
 
+
       <!-- PODACI O VOZILU -->
+
       <div v-if="vehicle">
 
         <h1 class="text-4xl font-bold mb-2">
@@ -153,15 +217,18 @@ const exportPDF = () => {
 
 
         <!-- INFORMACIJE O VOZILU -->
+
         <div class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-6 mb-8">
 
           <h2 class="text-2xl font-bold mb-6">
             Podaci o vozilu
           </h2>
 
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <div>
+
               <p class="text-gray-400">
                 Marka
               </p>
@@ -169,9 +236,12 @@ const exportPDF = () => {
               <p class="font-semibold">
                 {{ vehicle.brand }}
               </p>
+
             </div>
 
+
             <div>
+
               <p class="text-gray-400">
                 Model
               </p>
@@ -179,9 +249,12 @@ const exportPDF = () => {
               <p class="font-semibold">
                 {{ vehicle.model }}
               </p>
+
             </div>
 
+
             <div>
+
               <p class="text-gray-400">
                 Godište
               </p>
@@ -189,9 +262,12 @@ const exportPDF = () => {
               <p class="font-semibold">
                 {{ vehicle.year }}
               </p>
+
             </div>
 
+
             <div>
+
               <p class="text-gray-400">
                 Registracija
               </p>
@@ -199,9 +275,12 @@ const exportPDF = () => {
               <p class="font-semibold">
                 {{ vehicle.registration }}
               </p>
+
             </div>
 
+
             <div>
+
               <p class="text-gray-400">
                 Kilometraža
               </p>
@@ -209,18 +288,24 @@ const exportPDF = () => {
               <p class="font-semibold">
                 {{ vehicle.kilometers }} km
               </p>
+
             </div>
 
           </div>
 
         </div>
-        <button @click="exportPDF"
-        class="bg-[#046CC6] px-5 py-3 rounded-xl mt-4 mb-8">
-             Izvezi PDF
+
+
+        <button
+          @click="exportPDF"
+          class="bg-[#046CC6] px-5 py-3 rounded-xl mt-4 mb-8"
+        >
+          Izvezi PDF
         </button>
 
 
         <!-- SERVISNA POVIJEST -->
+
         <div class="flex justify-between items-center mb-6">
 
           <h2 class="text-2xl font-bold">
@@ -238,6 +323,7 @@ const exportPDF = () => {
 
 
         <!-- POPIS SERVISA -->
+
         <div
           v-if="dataStore.services.length > 0"
           class="space-y-4"
@@ -263,6 +349,7 @@ const exportPDF = () => {
 
               </div>
 
+
               <p class="text-gray-400">
                 {{ service.date }}
               </p>
@@ -272,39 +359,76 @@ const exportPDF = () => {
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
 
+
+              <!-- CIJENA DIJELOVA -->
+
               <div>
 
-                <p class="text-gray-400">
-                  Cijena dijelova/usluge
-                </p>
+                <div class="flex items-center gap-2">
 
-                <p class="font-semibold">
+                  <img
+                    :src="cijenaDijelovaIcon"
+                    alt="Cijena dijelova"
+                    class="w-10 h-10 object-contain"
+                  />
+
+                  <p class="text-gray-400 text-lg">
+                    Cijena dijelova
+                  </p>
+
+                </div>
+
+                <p class="font-semibold text-base mt-1">
                   {{ service.price }} €
                 </p>
 
               </div>
 
 
+              <!-- CIJENA RADA -->
+
               <div>
 
-                <p class="text-gray-400">
-                  Cijena rada
-                </p>
+                <div class="flex items-center gap-2">
 
-                <p class="font-semibold">
+                  <img
+                    :src="cijenaRadaIcon"
+                    alt="Cijena rada"
+                    class="w-10 h-10 object-contain"
+                  />
+
+                  <p class="text-gray-400 text-lg">
+                    Cijena rada
+                  </p>
+
+                </div>
+
+                <p class="font-semibold text-base mt-1">
                   {{ service.labor }} €
                 </p>
 
               </div>
 
 
+              <!-- KILOMETRAŽA -->
+
               <div>
 
-                <p class="text-gray-400">
-                  Kilometraža
-                </p>
+                <div class="flex items-center gap-2">
 
-                <p class="font-semibold">
+                  <img
+                    :src="kilometriIcon"
+                    alt="Kilometraža"
+                    class="w-10 h-10 object-contain"
+                  />
+
+                  <p class="text-gray-400 text-lg">
+                    Kilometraža
+                  </p>
+
+                </div>
+
+                <p class="font-semibold text-base mt-1">
                   {{ service.kilometers }} km
                 </p>
 
@@ -324,7 +448,7 @@ const exportPDF = () => {
 
 
             <button
-              @click="dataStore.deleteService(service.id)"
+              @click="openDeleteServiceModal(service)"
               class="mt-5 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-semibold"
             >
               Obriši servis
@@ -336,6 +460,7 @@ const exportPDF = () => {
 
 
         <!-- NEMA SERVISA -->
+
         <div
           v-else
           class="bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
@@ -351,6 +476,7 @@ const exportPDF = () => {
 
 
       <!-- VOZILO NIJE PRONAĐENO -->
+
       <div v-else>
 
         <p class="text-gray-400">
@@ -404,7 +530,7 @@ const exportPDF = () => {
           ></textarea>
 
 
-          <!-- CIJENA DIJELOVA / USLUGE -->
+          <!-- CIJENA DIJELOVA -->
 
           <input
             v-model="servicePrice"
@@ -592,6 +718,54 @@ const exportPDF = () => {
           </div>
 
         </form>
+
+      </div>
+
+    </div>
+
+
+    <!-- POPUP ZA BRISANJE SERVISA -->
+
+    <div
+      v-if="showDeleteServiceModal"
+      class="fixed inset-0 bg-black/70 flex items-center justify-center px-4 z-50"
+    >
+
+      <div
+        class="w-full max-w-sm bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
+      >
+
+        <img
+          :src="trashIcon"
+          alt="Brisanje"
+          class="w-16 h-16 mx-auto mb-5"
+        />
+
+        <h2 class="text-2xl font-bold mb-2">
+          Jeste li sigurni?
+        </h2>
+
+        <p class="text-gray-400 mb-7">
+          Servis će biti trajno izbrisan.
+        </p>
+
+        <div class="flex gap-3">
+
+          <button
+            @click="showDeleteServiceModal = false"
+            class="flex-1 bg-[#263143] hover:bg-[#334155] transition py-3 rounded-xl font-semibold"
+          >
+            Poništi
+          </button>
+
+          <button
+            @click="confirmDeleteService"
+            class="flex-1 bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
+          >
+            Izbriši
+          </button>
+
+        </div>
 
       </div>
 

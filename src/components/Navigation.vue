@@ -3,10 +3,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import logoutIcon from '../assets/odjava.png'
 
 const router = useRouter()
 const showUserMenu = ref(false)
 const authStore = useAuthStore()
+const showLogoutModal = ref(false)
 
 const logout = async () => {
   await authStore.logout()
@@ -99,7 +101,7 @@ const logout = async () => {
 
 
           <button
-          @click="logout"
+          @click="showLogoutModal = true"
             class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition"
           >
             Odjava
@@ -110,7 +112,50 @@ const logout = async () => {
       </div>
 
     </div>
+    <!-- POPUP ZA POTVRDU ODJAVE -->
 
+<div
+  v-if="showLogoutModal"
+  class="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+>
+  <div
+    class="w-full max-w-sm bg-[#171717] border border-[#2a2a2a] rounded-3xl p-8 text-center"
+  >
+
+    <img
+      :src="logoutIcon"
+      alt="Odjava"
+      class="w-16 h-16 mx-auto mb-5"
+    />
+
+    <h2 class="text-2xl font-bold mb-2">
+      Jeste li sigurni?
+    </h2>
+
+    <p class="text-gray-400 mb-7">
+      Jeste li sigurni da se želite odjaviti?
+    </p>
+
+    <div class="flex gap-3">
+
+      <button
+        @click="showLogoutModal = false"
+        class="flex-1 bg-[#263143] hover:bg-[#334155] transition py-3 rounded-xl font-semibold"
+      >
+        Poništi
+      </button>
+
+      <button
+        @click="logout"
+        class="flex-1 bg-red-600 hover:bg-red-700 transition py-3 rounded-xl font-semibold"
+      >
+        Odjavi se
+      </button>
+
+    </div>
+
+  </div>
+</div>
   </div>
 
 </template>

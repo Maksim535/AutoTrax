@@ -5,6 +5,11 @@ import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import Navigation from '../components/Navigation.vue'
 
+import datumIcon from '../assets/datum.png'
+import cijenaDijelovaIcon from '../assets/cijenaDijelova.png'
+import cijenaRadaIcon from '../assets/cijenaRada.png'
+import kilometriIcon from '../assets/kilometri.png'
+
 const router = useRouter()
 const dataStore = useDataStore()
 
@@ -101,17 +106,18 @@ const openVehicle = (vehicleId) => {
 
       </div>
 
+
       <div class="bg-[#171717] border border-[#2a2a2a] rounded-2xl p-6">
 
         <p class="text-gray-400 text-sm">
-             Posljednji servis
+          Posljednji servis
         </p>
 
         <p class="text-3xl font-bold mt-2">
-           {{ lastService }}
+          {{ lastService }}
         </p>
 
-</div>
+      </div>
 
     </div>
 
@@ -137,7 +143,7 @@ const openVehicle = (vehicleId) => {
               {{ service.name }}
             </h3>
 
-            <p class="text-[#046CC6] mt-1">
+            <p class="text-[#046CC6] text-lg font-semibold mt-1">
               {{ getVehicleName(service.vehicleId) }}
             </p>
 
@@ -150,7 +156,7 @@ const openVehicle = (vehicleId) => {
 
           <button
             @click="openVehicle(service.vehicleId)"
-            class="text-sm text-gray-400 hover:text-white transition"
+            class="text-sm text-[#046CC6] border border-[#046CC6] hover:bg-[#046CC6] hover:text-white transition px-4 py-2 rounded-xl font-semibold"
           >
             Vozilo →
           </button>
@@ -160,52 +166,100 @@ const openVehicle = (vehicleId) => {
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-[#2a2a2a]">
 
+          <!-- CIJENA -->
+
           <div>
 
-            <p class="text-gray-500 text-sm">
-              Cijena
-            </p>
+            <div class="flex items-center gap-2">
 
-            <p class="font-medium mt-1">
+              <img
+                :src="cijenaDijelovaIcon"
+                alt="Cijena"
+                class="w-10 h-10 object-contain"
+              />
+
+              <p class="text-gray-500 text-lg">
+                Cijena
+              </p>
+
+            </div>
+
+            <p class="font-medium text-base mt-1">
               {{ service.price }} €
             </p>
 
           </div>
 
 
+          <!-- RAD -->
+
           <div>
 
-            <p class="text-gray-500 text-sm">
-              Rad
-            </p>
+            <div class="flex items-center gap-2">
 
-            <p class="font-medium mt-1">
+              <img
+                :src="cijenaRadaIcon"
+                alt="Rad"
+                class="w-10 h-10 object-contain"
+              />
+
+              <p class="text-gray-500 text-lg">
+                Rad
+              </p>
+
+            </div>
+
+            <p class="font-medium text-base mt-1">
               {{ service.labor }} €
             </p>
 
           </div>
 
 
+          <!-- KILOMETRI -->
+
           <div>
 
-            <p class="text-gray-500 text-sm">
-              Kilometri
-            </p>
+            <div class="flex items-center gap-2">
 
-            <p class="font-medium mt-1">
+              <img
+                :src="kilometriIcon"
+                alt="Kilometri"
+                class="w-10 h-10 object-contain"
+              />
+
+              <p class="text-gray-500 text-lg">
+                Kilometri
+              </p>
+
+            </div>
+
+            <p class="font-medium text-base mt-1">
               {{ service.kilometers }} km
             </p>
 
           </div>
 
 
+          <!-- DATUM -->
+
           <div>
 
-            <p class="text-gray-500 text-sm">
-              Datum
-            </p>
+            <div class="flex items-center gap-2">
 
-            <p class="font-medium mt-1">
+              <img
+                :src="datumIcon"
+                alt="Datum"
+                class="w-10 h-10 object-contain"
+              />
+
+              <p class="text-gray-500 text-lg">
+                Datum
+              </p>
+
+            </div>
+
+            <p class="font-medium text-base mt-1">
               {{ service.date }}
             </p>
 
