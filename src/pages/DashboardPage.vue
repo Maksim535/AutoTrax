@@ -23,11 +23,10 @@ onMounted(() => {
   dataStore.getAllServices()
 })
 
-// ----------------------------------
 
-// STATISTIKA PRIKUPLJANJE I RACUNANJE UKUPNO
-
-//-------------------------------------
+// =============================
+// STATISTIKA
+// =============================
 
 const totalVehicles = computed(() => {
   return dataStore.vehicles.length
@@ -43,6 +42,7 @@ const totalCost = computed(() => {
   }, 0)
 })
 
+
 // =============================
 // UI VARIJABLE
 // =============================
@@ -54,28 +54,25 @@ const showUserMenu = ref(false)
 // DODAVANJE VOZILA
 // =============================
 
-// Kontrola otvaranja modala
 const showAddVehicle = ref(false)
 
-// Podaci novog vozila
 const brand = ref('')
 const model = ref('')
 const year = ref('')
 const registration = ref('')
 const kilometers = ref('')
 
+const validationError = ref('')
+
 
 // =============================
 // UREĐIVANJE VOZILA
 // =============================
 
-// Kontrola otvaranja modala
 const showEditVehicle = ref(false)
 
-// ID vozila koje uređujemo
 const editVehicle = ref(null)
 
-// Podaci vozila koje uređujemo
 const editBrand = ref('')
 const editModel = ref('')
 const editYear = ref('')
@@ -137,6 +134,21 @@ const saveEditVehicle = async () => {
 
 const addVehicle = async () => {
 
+  validationError.value = ''
+
+  if (
+    Number(year.value) < 1900 ||
+    Number(year.value) > new Date().getFullYear()
+  ) {
+    validationError.value = 'Godina vozila nije ispravna.'
+    return
+  }
+
+  if (Number(kilometers.value) < 0) {
+    validationError.value = 'Kilometraža ne može biti negativna.'
+    return
+  }
+
   await dataStore.addVehicle({
     brand: brand.value,
     model: model.value,
@@ -156,15 +168,13 @@ const addVehicle = async () => {
 
 </script>
 
+
 <template>
 
   <div class="min-h-screen bg-[#0f0f0f] text-white p-6">
 
 
     <Navigation />
-
-    
-
 
 
     <!-- ========================= -->
@@ -182,7 +192,6 @@ const addVehicle = async () => {
       </h2>
 
     </div>
-
 
 
     <!-- ========================= -->
@@ -239,13 +248,11 @@ const addVehicle = async () => {
     </div>
 
 
-
     <!-- ========================= -->
     <!-- POPIS VOZILA -->
     <!-- ========================= -->
 
     <div>
-
 
       <div class="flex items-center justify-between mb-5">
 
@@ -262,7 +269,6 @@ const addVehicle = async () => {
         </button>
 
       </div>
-
 
 
       <div>
@@ -292,7 +298,6 @@ const addVehicle = async () => {
           </button>
 
         </div>
-
 
 
         <!-- POSTOJE VOZILA -->
@@ -332,7 +337,6 @@ const addVehicle = async () => {
             </p>
 
 
-
             <!-- UREDI -->
 
             <button
@@ -341,7 +345,6 @@ const addVehicle = async () => {
             >
               Uredi podatke o vozilu
             </button>
-
 
 
             <!-- OBRIŠI -->
@@ -360,7 +363,6 @@ const addVehicle = async () => {
       </div>
 
     </div>
-
 
 
     <!-- ========================= -->
@@ -394,7 +396,6 @@ const addVehicle = async () => {
         </div>
 
 
-
         <form
           @submit.prevent="addVehicle"
           class="space-y-4"
@@ -419,7 +420,6 @@ const addVehicle = async () => {
           </div>
 
 
-
           <div>
 
             <label class="text-gray-300 text-sm block mb-2">
@@ -438,7 +438,6 @@ const addVehicle = async () => {
           </div>
 
 
-
           <div>
 
             <label class="text-gray-300 text-sm block mb-2">
@@ -449,13 +448,14 @@ const addVehicle = async () => {
             <input
               v-model="year"
               type="number"
+              min="1900"
+              :max="new Date().getFullYear()"
               placeholder="npr. 2020"
               required
               class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
             />
 
           </div>
-
 
 
           <div>
@@ -476,7 +476,6 @@ const addVehicle = async () => {
           </div>
 
 
-
           <div>
 
             <label class="text-gray-300 text-sm block mb-2">
@@ -487,6 +486,7 @@ const addVehicle = async () => {
             <input
               v-model="kilometers"
               type="number"
+              min="0"
               placeholder="npr. 85000"
               required
               class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
@@ -494,6 +494,15 @@ const addVehicle = async () => {
 
           </div>
 
+
+          <!-- PORUKA O GREŠCI -->
+
+          <p
+            v-if="validationError"
+            class="text-red-400 text-sm"
+          >
+            {{ validationError }}
+          </p>
 
 
           <button
@@ -508,7 +517,6 @@ const addVehicle = async () => {
       </div>
 
     </div>
-
 
 
     <!-- ========================= -->
@@ -542,7 +550,6 @@ const addVehicle = async () => {
         </div>
 
 
-
         <form
           @submit.prevent="saveEditVehicle"
           class="space-y-4"
@@ -566,7 +573,6 @@ const addVehicle = async () => {
           </div>
 
 
-
           <div>
 
             <label class="text-gray-300 text-sm block mb-2">
@@ -584,7 +590,6 @@ const addVehicle = async () => {
           </div>
 
 
-
           <div>
 
             <label class="text-gray-300 text-sm block mb-2">
@@ -595,12 +600,13 @@ const addVehicle = async () => {
             <input
               v-model="editYear"
               type="number"
+              min="1900"
+              :max="new Date().getFullYear()"
               required
               class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
             />
 
           </div>
-
 
 
           <div>
@@ -620,7 +626,6 @@ const addVehicle = async () => {
           </div>
 
 
-
           <div>
 
             <label class="text-gray-300 text-sm block mb-2">
@@ -631,12 +636,12 @@ const addVehicle = async () => {
             <input
               v-model="editKilometers"
               type="number"
+              min="0"
               required
               class="w-full bg-[#111111] border border-[#3a3a3a] rounded-2xl px-5 py-3 text-white outline-none focus:border-orange-500"
             />
 
           </div>
-
 
 
           <div class="flex gap-3 justify-end">
