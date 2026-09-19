@@ -1,6 +1,6 @@
 <script setup>
 import Navigation from '../components/Navigation.vue'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '../stores/auth.js'
 
 const authStore = useAuthStore()
 </script>
